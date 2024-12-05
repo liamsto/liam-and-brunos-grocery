@@ -1,1 +1,0 @@
-I completed all the suggested bonus marks on GitHub - remove/change quantity in cart, validating userid and password, and I added some basic CSS and a navbar to make it look better. I commented where I changed major stuff and also there are some extra pages to handle the updating and removing. 
