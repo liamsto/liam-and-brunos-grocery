@@ -1,6 +1,7 @@
 <%@ page import="java.util.HashMap" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.sql.*" %>
+<%@ page import="java.math.BigDecimal" %>
 
 <%
 @SuppressWarnings({"unchecked"})
