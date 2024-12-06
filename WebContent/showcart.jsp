@@ -3,14 +3,14 @@
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.text.NumberFormat" %>
 <%@ page import="java.util.Map" %>
+<%@ page import="java.sql.*" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF8"%>
 <!DOCTYPE html>
 <html>
 <head>
     <title>Your Shopping Cart</title>
-		  <!--why I should get bonus marks - cool fancy CSS -->
     <style>
-		
+        /* Cool fancy CSS for bonus marks */
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
@@ -89,7 +89,7 @@
         }
     </style>
     <script>
-		//Bonus marks - remove item from cart and set/update quantity 
+        // Remove item from cart and update quantity
         function removeItem(productId) {
             window.location.href = 'removeitem.jsp?productId=' + productId;
         }
@@ -107,80 +107,81 @@
     </div>
 
 <%
-//gets the current list of products
-@SuppressWarnings({"unchecked"})
-HashMap<String, ArrayList<Object>> productList = (HashMap<String, ArrayList<Object>>) session.getAttribute("productList");
+    String userId = (String) session.getAttribute("authenticatedUser");
 
-if (productList == null)
-{   out.println("<h1>Your shopping cart is empty!</h1>");
-    productList = new HashMap<String, ArrayList<Object>>();
-}
-else
-{
-    NumberFormat currFormat = NumberFormat.getCurrencyInstance();
+    if (userId == null) {
+        out.println("<h1>You must be logged in to view your cart!</h1>");
+    } else {
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+        ResultSet rs = null;
 
-    out.println("<h1>Your Shopping Cart</h1>");
-    out.print("<table><tr><th>Product Id</th><th>Product Name</th><th>Quantity</th>");
-    out.println("<th>Price</th><th>Subtotal</th><th>Action</th></tr>");
+        try {
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
+            String dbUser = "sa";
+            String dbPassword = "304#sa#pw";
+            conn = DriverManager.getConnection(url, dbUser, dbPassword);
 
-    double total =0;
-    Iterator<Map.Entry<String, ArrayList<Object>>> iterator = productList.entrySet().iterator();
-    while (iterator.hasNext()) 
-    {   Map.Entry<String, ArrayList<Object>> entry = iterator.next();
-        ArrayList<Object> product = (ArrayList<Object>) entry.getValue();
-		//i don't remember why this is here but it works so I don't want to take it out
-        if (product.size() < 4)
-        {
-            out.println("<p>Expected product with four entries. Got: "+product+"</p>");
-            continue;
+            // Query to fetch cart items for the user
+            String query = "SELECT c.productId, p.productName, c.quantity, c.price, (c.quantity * c.price) AS subtotal " +
+                           "FROM cart c " +
+                           "JOIN product p ON c.productId = p.productId " +
+                           "WHERE c.userId = ?";
+            pstmt = conn.prepareStatement(query);
+            pstmt.setString(1, userId);
+            rs = pstmt.executeQuery();
+
+            // If cart is empty
+            if (!rs.isBeforeFirst()) {
+                out.println("<h1>Your shopping cart is empty!</h1>");
+            } else {
+                NumberFormat currFormat = NumberFormat.getCurrencyInstance();
+                double total = 0;
+
+                out.println("<h1>Your Shopping Cart</h1>");
+                out.print("<table><tr><th>Product Id</th><th>Product Name</th><th>Quantity</th>");
+                out.println("<th>Price</th><th>Subtotal</th><th>Action</th></tr>");
+
+                while (rs.next()) {
+                    String productId = rs.getString("productId");
+                    String productName = rs.getString("productName");
+                    int quantity = rs.getInt("quantity");
+                    double price = rs.getDouble("price");
+                    double subtotal = rs.getDouble("subtotal");
+
+                    out.print("<tr>");
+                    out.print("<td>" + productId + "</td>");
+                    out.print("<td>" + productName + "</td>");
+                    out.print("<td align=\"center\">");
+                    out.print("<input type='number' id='quantity-" + productId + "' class='quantity-input' value='" + quantity + "' min='1'>");
+                    out.print("<button onclick=\"updateQuantity('" + productId + "')\">Update</button>");
+                    out.print("</td>");
+                    out.print("<td align=\"right\">" + currFormat.format(price) + "</td>");
+                    out.print("<td align=\"right\">" + currFormat.format(subtotal) + "</td>");
+                    out.print("<td><button class=\"remove-button\" onclick=\"removeItem('" + productId + "')\">Remove</button></td>");
+                    out.print("</tr>");
+
+                    total += subtotal;
+                }
+
+                out.println("<tr><td colspan=\"5\" align=\"right\"><b>Order Total</b></td>"
+                        + "<td align=\"right\">" + currFormat.format(total) + "</td></tr>");
+                out.println("</table>");
+
+                out.println("<div style='text-align: center;'>");
+                out.println("<a href=\"checkout.jsp\" class=\"action-button\">Check Out</a>");
+                out.println("<a href=\"listprod.jsp\" class=\"action-button\">Continue Shopping</a>");
+                out.println("</div>");
+            }
+        } catch (Exception e) {
+            out.println("<p style='color: red;'>Error loading cart: " + e.getMessage() + "</p>");
+        } finally {
+            if (rs != null) try { rs.close(); } catch (SQLException ignored) {}
+            if (pstmt != null) try { pstmt.close(); } catch (SQLException ignored) {}
+            if (conn != null) try { conn.close(); } catch (SQLException ignored) {}
         }
-        
-        out.print("<tr><td>"+product.get(0)+"</td>");
-        out.print("<td>"+product.get(1)+"</td>");
-
-        int qty = 0;
-        Object itemqty = product.get(3);
-        try
-        {
-            qty = Integer.parseInt(itemqty.toString());
-        }
-        catch (Exception e)
-        {
-            out.println("<p style='color: red;'>Invalid quantity for product: "+product.get(0)+" quantity: "+qty+"</p>");
-        }
-
-        out.print("<td align=\"center\">");
-        out.print("<input type='number' id='quantity-" + product.get(0) + "' class='quantity-input' value='" + qty + "' min='1'>");
-        out.print("<button onclick=\"updateQuantity('" + product.get(0) + "')\">Update</button>");
-        out.print("</td>");
-
-        Object price = product.get(2);
-        double pr = 0;
-        
-        try
-        {
-            pr = Double.parseDouble(price.toString());
-        }
-        catch (Exception e)
-        {
-            out.println("<p style='color: red;'>Invalid price for product: "+product.get(0)+" price: "+price+"</p>");
-        }
-
-        out.print("<td align=\"right\">"+currFormat.format(pr)+"</td>");
-        out.print("<td align=\"right\">"+currFormat.format(pr*qty)+"</td>");
-		//Bonus marks - remove button to remove item from cart
-        out.print("<td><button class=\"remove-button\" onclick=\"removeItem('" + product.get(0) + "')\">Remove</button></td>");
-        out.println("</tr>");
-        total = total + pr * qty;
     }
-    out.println("<tr><td colspan=\"5\" align=\"right\"><b>Order Total</b></td>"
-            +"<td align=\"right\">"+currFormat.format(total)+"</td></tr>");
-    out.println("</table>");
-
-    out.println("<div style='text-align: center;'>");
-    out.println("<a href=\"checkout.jsp\" class=\"action-button\">Check Out</a>");
-    out.println("<a href=\"listprod.jsp\" class=\"action-button\">Continue Shopping</a>");
-    out.println("</div>");}
 %>
 </body>
 </html>
