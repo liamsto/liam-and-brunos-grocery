@@ -8,9 +8,13 @@
             margin: 20px;
             background-color: #f0f0f0;
         }
-        .login-container {
+        div {
             text-align: center;
             margin-top: 100px;
+        }
+        .createAccount{
+       
+        margin-top: 20px;
         }
         h3 {
             font-size: 24px;
@@ -26,7 +30,7 @@
         td {
             padding: 8px;
         }
-        .submit {
+        .submit{
             background-color: #007bff;
             color: white;
             padding: 10px 20px;
@@ -47,7 +51,7 @@
 <body>
 
 <div class="login-container">
-    <h3>Please Login</h3>
+    
 
     <%
     if (session.getAttribute("loginMessage") != null) {
@@ -67,9 +71,17 @@
             </tr>
         </table>
         <br/>
-        <input class="submit" type="submit" name="Submit2" value="Log In">
+        <input class="submit" type="submit" name="Submit2" value="Log in">
+      
     </form>
+   
 </div>
+<div class = "createAccount"> 
+<form name = "CreateAccount" method = "post" action = "createAccount.jsp">
+    <h3>Don't have an account? No problem!</h3>
+    <input class="submit" type="submit" name="Submit3" value="Create an Account">
 
+</form>
+</div>
 </body>
 </html>
