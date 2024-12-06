@@ -10,7 +10,8 @@ DROP TABLE productinventory;
 DROP TABLE warehouse;
 DROP TABLE orderproduct;
 DROP TABLE incart;
-DROP TABLE cart;
+IF OBJECT_ID('cart', 'U') IS NOT NULL
+    DROP TABLE cart;
 DROP TABLE product;
 DROP TABLE category;
 DROP TABLE ordersummary;
@@ -29,21 +30,9 @@ CREATE TABLE customer (
     state               VARCHAR(20),
     postalCode          VARCHAR(20),
     country             VARCHAR(40),
-    userid              VARCHAR(20),
+    userid              VARCHAR(20) UNIQUE,
     password            VARCHAR(30),
     PRIMARY KEY (customerId)
-);
-
-CREATE TABLE cart (
-    cartId              INT IDENTITY PRIMARY KEY,
-    userId              VARCHAR(50) NOT NULL,
-    productId           INT NOT NULL,
-    quantity            INT NOT NULL,
-    price               DECIMAL(10,2),
-    FOREIGN KEY (userId) REFERENCES customer(userid)
-        ON UPDATE CASCADE ON DELETE CASCADE,
-    FOREIGN KEY (productId) REFERENCES product(productId)
-        ON UPDATE CASCADE ON DELETE NO ACTION
 );
 
 
@@ -156,6 +145,19 @@ CREATE TABLE review (
     FOREIGN KEY (productId) REFERENCES product(productId)
         ON UPDATE CASCADE ON DELETE CASCADE
 );
+
+CREATE TABLE cart (
+    cartId              INT IDENTITY PRIMARY KEY,
+    userId              VARCHAR(20) NOT NULL,
+    productId           INT NOT NULL,
+    quantity            INT NOT NULL,
+    price               DECIMAL(10,2),
+    FOREIGN KEY (userId) REFERENCES customer(userid)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (productId) REFERENCES product(productId)
+        ON UPDATE CASCADE ON DELETE NO ACTION
+);
+
 
 INSERT INTO category(categoryName) VALUES ('Beverages');
 INSERT INTO category(categoryName) VALUES ('Condiments');
