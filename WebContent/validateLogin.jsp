@@ -1,4 +1,4 @@
-<%@ page language="java" import="java.io.*,java.sql.*,java.util.HashMap,java.util.ArrayList" %>
+<%@ page language="java" import="java.io.*,java.sql.*,java.util.HashMap,java.util.ArrayList,java.math.BigDecimal" %>
 <%@ include file="jdbc.jsp" %>
 <%
     String authenticatedUser = null;

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Ray's Grocery CheckOut Line</title>
+    <title>Liam and Bruno's Grocery CheckOut Line</title>
     <style>
         body {
             font-family: Arial, sans-serif;

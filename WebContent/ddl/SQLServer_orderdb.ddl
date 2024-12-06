@@ -10,6 +10,7 @@ DROP TABLE productinventory;
 DROP TABLE warehouse;
 DROP TABLE orderproduct;
 DROP TABLE incart;
+DROP TABLE cart;
 DROP TABLE product;
 DROP TABLE category;
 DROP TABLE ordersummary;
