@@ -33,6 +33,19 @@ CREATE TABLE customer (
     PRIMARY KEY (customerId)
 );
 
+CREATE TABLE cart (
+    cartId              INT IDENTITY PRIMARY KEY,
+    userId              VARCHAR(50) NOT NULL,
+    productId           INT NOT NULL,
+    quantity            INT NOT NULL,
+    price               DECIMAL(10,2),
+    FOREIGN KEY (userId) REFERENCES customer(userid)
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    FOREIGN KEY (productId) REFERENCES product(productId)
+        ON UPDATE CASCADE ON DELETE NO ACTION
+);
+
+
 CREATE TABLE paymentmethod (
     paymentMethodId     INT IDENTITY,
     paymentType         VARCHAR(20),
