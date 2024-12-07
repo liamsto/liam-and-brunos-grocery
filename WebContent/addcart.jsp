@@ -32,11 +32,10 @@ product.add(quantity);
 if (productList.containsKey(id)) {
     product = (ArrayList<Object>) productList.get(id);
 
-    // Defensive checks for size and type
     if (product.size() < 4 || !(product.get(3) instanceof Integer)) {
         System.out.println("Incomplete or invalid product data for ID: " + id);
         while (product.size() < 4) {
-            product.add(0); // Add default values for missing elements
+            product.add(0); 
         }
     }
 
@@ -59,7 +58,6 @@ try {
     String dbPassword = "304#sa#pw";
     conn = DriverManager.getConnection(url, dbUser, dbPassword);
 
-    // Check if the product is already in the cart for this user
     String checkCartQuery = "SELECT quantity FROM cart WHERE userId = ? AND productId = ?";
     pstmt = conn.prepareStatement(checkCartQuery);
     pstmt.setString(1, userId);
@@ -67,7 +65,6 @@ try {
     ResultSet rs = pstmt.executeQuery();
 
     if (rs.next()) {
-        // Product already in cart, update the quantity
         int existingQuantity = rs.getInt("quantity");
         String updateCartQuery = "UPDATE cart SET quantity = ?, price = ? WHERE userId = ? AND productId = ?";
         pstmt = conn.prepareStatement(updateCartQuery);
@@ -77,7 +74,6 @@ try {
         pstmt.setString(4, id);
         pstmt.executeUpdate();
     } else {
-        // Product not in cart, insert a new record
         String insertCartQuery = "INSERT INTO cart (userId, productId, quantity, price) VALUES (?, ?, ?, ?)";
         pstmt = conn.prepareStatement(insertCartQuery);
         pstmt.setString(1, userId);

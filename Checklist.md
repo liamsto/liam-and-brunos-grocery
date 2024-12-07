@@ -1,16 +1,16 @@
 # Checklist
 
 ## Liam
-- [ ] Executive Summary
-- [ ] List of Sources
+- [X] Executive Summary
+- [x] List of Sources
 - [X] Cart stored in database between sessions
 - [X] Create account data validation
 - [X] Display product review on product page
 ## Bruno
-- [ ] System Features
-- [ ] Walkthrough
-- [ ] Create user account page
-- [ ] Ability to enter review on product
-- [ ] Display item inventory by store/warehouse
+- [x] System Features
+- [x] Walkthrough
+- [x] Create user account page
+- [x] Ability to enter review on product
+- [x] Display item inventory by store/warehouse
 
 
