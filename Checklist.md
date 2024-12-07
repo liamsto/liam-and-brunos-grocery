@@ -7,7 +7,7 @@
 - [X] Create account data validation
 - [X] Display product review on product page
 ## Bruno
-- [] System Features
+- [ ] System Features
 - [X] Walkthrough
 - [X] Create user account page
 - [X] Ability to enter review on product
