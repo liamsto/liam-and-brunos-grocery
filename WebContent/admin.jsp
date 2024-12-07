@@ -32,6 +32,40 @@
     tr:hover {
         background-color: #f1f1f1;
     }
+    .inventory-form {
+            margin-top: 30px;
+            text-align: center;
+        }
+        .inventory-form input {
+            padding: 8px;
+            font-size: 14px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        .inventory-form button {
+            padding: 8px 16px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .inventory-form button:hover {
+            background-color: #0056b3;
+        }
+        .inventory-table {
+            margin-top: 30px;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .inventory-table th, .inventory-table td {
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+        .inventory-table th {
+            background-color: #f0f0f0;
+        }
 </style>
 </head>
 <body>
@@ -86,5 +120,6 @@
     }
 %>
 
+</div>
 </body>
 </html>
