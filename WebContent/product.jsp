@@ -27,13 +27,9 @@
             text-align: center;
             margin-bottom: 20px;
         }
-        .product-details {
+        .product-details, .actions {
             text-align: center;
             margin-bottom: 20px;
-        }
-        .actions {
-            text-align: center;
-            margin-top: 20px;
         }
         a {
             text-decoration: none;
@@ -55,14 +51,26 @@
             padding: 15px;
             border-radius: 5px;
         }
-        .review p {
-            margin: 5px 0;
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
         }
-        hr {
-            border: none;
-            border-top: 1px solid #ddd;
-            margin-top: 15px;
-            margin-bottom: 15px;
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background-color: #f4f4f4;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
         }
     </style>
 </head>
@@ -87,6 +95,7 @@
             String dbPassword = "304#sa#pw";
             conn = DriverManager.getConnection(url, dbUser, dbPassword);
 
+            // Fetch product details
             String query = "SELECT productName, productPrice, productDesc, productImageURL FROM product WHERE productId = ?";
             pstmt = conn.prepareStatement(query);
             pstmt.setInt(1, Integer.parseInt(productId));
@@ -114,14 +123,44 @@
                 out.println("<div class='actions'>");
                 out.println("<a href='" + addCartLink + "'>Add to Cart</a>");
                 out.println("<a href='listprod.jsp' style='margin-left: 20px;'>Continue Shopping</a>");
-                out.println("<a href='createReview.jsp?productId=" + productId + "' style='margin-left: 20px;'>Leave a Review!</a>"); // ADDED TO PASS PRODUCT ID
+                out.println("<a href='createReview.jsp?productId=" + productId + "' style='margin-left: 20px;'>Leave a Review!</a>");
                 out.println("</div>");
 
-                // Close product result set and statement before fetching reviews
+                // Close product result set and statement before fetching inventory and reviews
                 rs.close();
                 pstmt.close();
 
-                // Retrieve reviews for the product
+                // Display product inventory
+                out.println("<h2>Inventory Details</h2>");
+                String inventoryQuery = "SELECT warehouseId, quantity FROM productinventory WHERE productId = ?";
+                pstmt = conn.prepareStatement(inventoryQuery);
+                pstmt.setInt(1, Integer.parseInt(productId));
+                rs = pstmt.executeQuery();
+
+                out.println("<table>");
+                out.println("<tr><th>Warehouse ID</th><th>Quantity</th></tr>");
+
+                boolean hasInventory = false;
+                while (rs.next()) {
+                    hasInventory = true;
+                    int warehouseId = rs.getInt("warehouseId");
+                    int quantity = rs.getInt("quantity");
+
+                    out.println("<tr>");
+                    out.println("<td>" + warehouseId + "</td>");
+                    out.println("<td>" + quantity + "</td>");
+                    out.println("</tr>");
+                }
+
+                if (!hasInventory) {
+                    out.println("<tr><td colspan='3' style='text-align:center;'>No inventory available for this product.</td></tr>");
+                }
+                out.println("</table>");
+
+                rs.close();
+                pstmt.close();
+
+                // Retrieve and display reviews for the product
                 out.println("<div class='review-section'>");
                 out.println("<h2>Customer Reviews</h2>");
 
@@ -142,7 +181,6 @@
                     out.println("<p><strong>Date:</strong> " + reviewDate + "</p>");
                     out.println("<p><strong>Comment:</strong> " + reviewCmt + "</p>");
                     out.println("</div>");
-                    out.println("<hr/>");
                 }
 
                 if (!hasReviews) {
