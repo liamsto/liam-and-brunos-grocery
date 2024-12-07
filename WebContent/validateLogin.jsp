@@ -13,7 +13,7 @@
     if (authenticatedUser != null) {
         // Load the cart for the user
         loadCart(authenticatedUser, session);
-        response.sendRedirect("admin.jsp"); // successful - redirect to admin page
+        response.sendRedirect("index.jsp"); // successful - redirect to admin page
     } else {
         response.sendRedirect("login.jsp"); // failed - kick them back to login page
     }
