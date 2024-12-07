@@ -46,6 +46,24 @@
         a:hover {
             background-color: #0056b3;
         }
+        .review-section {
+            margin-top: 40px;
+        }
+        .review {
+            background-color: #f9f9f9;
+            margin: 15px 0;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .review p {
+            margin: 5px 0;
+        }
+        hr {
+            border: none;
+            border-top: 1px solid #ddd;
+            margin-top: 15px;
+            margin-bottom: 15px;
+        }
     </style>
 </head>
 <body>
@@ -65,9 +83,9 @@
         try {
             Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
             String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
-            String user = "sa";
-            String password = "304#sa#pw";
-            conn = DriverManager.getConnection(url, user, password);
+            String dbUser = "sa";
+            String dbPassword = "304#sa#pw";
+            conn = DriverManager.getConnection(url, dbUser, dbPassword);
 
             String query = "SELECT productName, productPrice, productDesc, productImageURL FROM product WHERE productId = ?";
             pstmt = conn.prepareStatement(query);
@@ -89,7 +107,7 @@
                 if (productImageURL != null && !productImageURL.isEmpty()) {
                     out.println("<div class='product-image'><img src='" + productImageURL + "' alt='Product Image' width='300'></div>");
                 }
-                // display the image that we retrieved
+                // Display image from database
                 out.println("<div class='product-image'><img src='displayImage.jsp?productId=" + productId + "' alt='Product Image from Database' width='300'></div>");
 
                 String addCartLink = "addcart.jsp?id=" + productId + "&name=" + URLEncoder.encode(productName, "UTF-8") + "&price=" + productPrice;
@@ -98,6 +116,41 @@
                 out.println("<a href='listprod.jsp' style='margin-left: 20px;'>Continue Shopping</a>");
                 out.println("<a href='createReview.jsp?productId=" + productId + "' style='margin-left: 20px;'>Leave a Review!</a>");
                 out.println("</div>");
+
+                // Close product result set and statement before fetching reviews
+                rs.close();
+                pstmt.close();
+
+                // Retrieve reviews for the product
+                out.println("<div class='review-section'>");
+                out.println("<h2>Customer Reviews</h2>");
+
+                String reviewQuery = "SELECT reviewRating, reviewDate, reviewComment FROM review WHERE productId = ? ORDER BY reviewDate DESC";
+                pstmt = conn.prepareStatement(reviewQuery);
+                pstmt.setInt(1, Integer.parseInt(productId));
+                rs = pstmt.executeQuery();
+
+                boolean hasReviews = false;
+                while (rs.next()) {
+                    hasReviews = true;
+                    int reviewRating = rs.getInt("reviewRating");
+                    Timestamp reviewDate = rs.getTimestamp("reviewDate");
+                    String reviewCmt = rs.getString("reviewComment");
+
+                    out.println("<div class='review'>");
+                    out.println("<p><strong>Rating:</strong> " + reviewRating + "/5</p>");
+                    out.println("<p><strong>Date:</strong> " + reviewDate + "</p>");
+                    out.println("<p><strong>Comment:</strong> " + reviewCmt + "</p>");
+                    out.println("</div>");
+                    out.println("<hr/>");
+                }
+
+                if (!hasReviews) {
+                    out.println("<p>No reviews yet. Be the first to <a href='createReview.jsp?productId=" + productId + "'>leave a review</a>.</p>");
+                }
+
+                out.println("</div>");
+
             } else {
                 out.println("<p style='color: red;'>Product not found.</p>");
             }
