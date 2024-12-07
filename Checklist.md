@@ -7,10 +7,10 @@
 - [X] Create account data validation
 - [X] Display product review on product page
 ## Bruno
-- [ ] System Features
-- [ ] Walkthrough
-- [ ] Create user account page
-- [ ] Ability to enter review on product
-- [ ] Display item inventory by store/warehouse
+- [] System Features
+- [X] Walkthrough
+- [X] Create user account page
+- [X] Ability to enter review on product
+- [X] Display item inventory by store/warehouse
 
 
