@@ -1,3 +1,4 @@
+<%@ page import="java.sql.*" %>
 <%@ page import="java.util.HashMap" %>
 <%@ page import="java.util.ArrayList" %>
 <%@ page import="java.util.Map" %>
@@ -36,23 +37,54 @@
 </head>
 <body>
 <%
-//bonus marks - helper page to remove items 
-String productId = request.getParameter("productId");
-@SuppressWarnings({"unchecked"})
-HashMap<String, ArrayList<Object>> productList = (HashMap<String, ArrayList<Object>>) session.getAttribute("productList");
+    String productId = request.getParameter("productId");
+    String userId = (String) session.getAttribute("authenticatedUser"); // Get the logged-in user ID
 
-if (productList != null && productId != null) {
-    if (productList.containsKey(productId)) {
-        productList.remove(productId);
-        out.println("<p>Product with ID " + productId + " has been removed from your shopping cart.</p>");
+    if (userId == null) {
+        out.println("<p>You must be logged in to modify your cart.</p>");
+    } else if (productId == null || productId.isEmpty()) {
+        out.println("<p>Invalid product ID.</p>");
     } else {
-        //probably never going to happen
-        out.println("<p>Product not found in your shopping cart.</p>");
+        // Remove from database cart
+        Connection conn = null;
+        PreparedStatement pstmt = null;
+
+        try {
+            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
+            String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
+            String dbUser = "sa";
+            String dbPassword = "304#sa#pw";
+            conn = DriverManager.getConnection(url, dbUser, dbPassword);
+
+            // Delete the item from the database cart
+            String deleteQuery = "DELETE FROM cart WHERE userId = ? AND productId = ?";
+            pstmt = conn.prepareStatement(deleteQuery);
+            pstmt.setString(1, userId);
+            pstmt.setString(2, productId);
+            int rowsAffected = pstmt.executeUpdate();
+
+            if (rowsAffected > 0) {
+                out.println("<p>Product with ID " + productId + " has been removed from your shopping cart.</p>");
+            } else {
+                out.println("<p>Product with ID " + productId + " was not found in your cart.</p>");
+            }
+        } catch (Exception e) {
+            out.println("<p style='color: red;'>Error: " + e.getMessage() + "</p>");
+        } finally {
+            try {
+                if (pstmt != null) pstmt.close();
+                if (conn != null) conn.close();
+            } catch (SQLException ignored) {}
+        }
+
+        
+        @SuppressWarnings({"unchecked"})
+        HashMap<String, ArrayList<Object>> productList = (HashMap<String, ArrayList<Object>>) session.getAttribute("productList");
+        if (productList != null && productList.containsKey(productId)) {
+            productList.remove(productId);
+            session.setAttribute("productList", productList);
+        }
     }
-} else {
-    out.println("<p>Your shopping cart is empty or invalid product ID.</p>");
-}
-session.setAttribute("productList", productList);
 %>
 
 <h2><a href="showcart.jsp">Back to Cart</a></h2>
