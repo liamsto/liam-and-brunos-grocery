@@ -1,41 +1,81 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>New Account Screen</title>
+    <title>Leave a Review</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f0f0f0;
+            margin: 0;
+            background-color: #f9f9f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
         }
-        .createAccount {
-            text-align: center;
-            margin-top: 100px;
-        }
-        h2 {
+        .review-container {
+            max-width: 600px;
+            width: 100%;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 30px;
             text-align: center;
         }
         h3 {
+            color: #333333;
             font-size: 24px;
+            margin-bottom: 20px;
+        }
+        p {
+            color: #666666;
+            font-size: 16px;
+            margin-bottom: 30px;
         }
         form {
-            margin: 20px auto;
-            display: inline-block;
             text-align: left;
         }
-        table {
-            margin: 0 auto;
+        label {
+            font-size: 16px;
+            color: #444444;
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
         }
-        td {
-            padding: 8px;
+        .rating-options {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+        .rating-options label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        textarea {
+            width: 100%;
+            height: 100px;
+            border: 1px solid #cccccc;
+            border-radius: 5px;
+            padding: 10px;
+            font-size: 14px;
+            color: #333333;
+            margin-bottom: 20px;
+            resize: none;
+        }
+        textarea:focus {
+            border-color: #007bff;
+            outline: none;
         }
         .submit {
             background-color: #007bff;
             color: white;
-            padding: 10px 20px;
+            padding: 12px 20px;
             border: none;
             border-radius: 5px;
             cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
             transition: background-color 0.3s;
         }
         .submit:hover {
@@ -43,42 +83,49 @@
         }
         .error-message {
             color: red;
-            margin-top: 10px;
+            font-size: 14px;
+            margin-bottom: 20px;
         }
     </style>
 </head>
 <body>
 
-<div class="createAccount">
-    <h3> Share Your Thoughts With Others! </h3>
-    <br>
-    <br>
-    <h4> Leave a review here: </h4>
+<div class="review-container">
+    <h3>Share Your Thoughts!</h3>
+    <p>We value your feedback. Please rate the product and leave a detailed review.</p>
+
     <%
     if (session.getAttribute("loginMessage") != null) {
         out.println("<p class='error-message'>" + session.getAttribute("loginMessage").toString() + "</p>");
     }
+    
+    String productId = request.getParameter("productId");
+    if (productId == null || productId.isEmpty()) {
+        out.println("<p style='color: red;'>Invalid product ID. Please go back and try again.</p>");
+        return;
+    }
     %>
 
-    <form name="MyForm" method="post" action="product.jsp">
-        <tr>
-            <td>Rate (1 to 5):</td>
-            <br>
-            <td>
-                <label><input type="radio" name="rating" value="1" required> 1</label>
-                <label><input type="radio" name="rating" value="2"> 2</label>
-                <label><input type="radio" name="rating" value="3"> 3</label>
-                <label><input type="radio" name="rating" value="4"> 4</label>
-                <label><input type="radio" name="rating" value="5"> 5</label>
-            </td>
-        </tr>
-        <br> <br>   
-        <td>Provide Your Reasoning:</td>    
-        <br> 
-             <textarea name="review" id="review" rows="10" cols="100" required></textarea>
-        <br/>
-        <br>
-        <input class="submit" type="submit" name="Submit2" value="Submit my Review!">
+    <form method="POST" action="submitReview.jsp">
+        <!-- Hidden field to pass productId -->
+        <input type="hidden" name="productId" value="<%= productId %>">
+        
+        <!-- Rating Section -->
+        <label>Rate the Product:</label>
+        <div class="rating-options">
+            <label><input type="radio" name="rating" value="1" required> 1</label>
+            <label><input type="radio" name="rating" value="2"> 2</label>
+            <label><input type="radio" name="rating" value="3"> 3</label>
+            <label><input type="radio" name="rating" value="4"> 4</label>
+            <label><input type="radio" name="rating" value="5"> 5</label>
+        </div>
+        
+        <!-- Review Section -->
+        <label>Write Your Review:</label>
+        <textarea name="review" placeholder="Tell us about your experience..." required></textarea>
+        
+        <!-- Submit Button -->
+        <button class="submit" type="submit">Submit Review</button>
     </form>
 </div>
 

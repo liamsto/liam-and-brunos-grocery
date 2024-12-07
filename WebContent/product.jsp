@@ -96,7 +96,7 @@
                 out.println("<div class='actions'>");
                 out.println("<a href='" + addCartLink + "'>Add to Cart</a>");
                 out.println("<a href='listprod.jsp' style='margin-left: 20px;'>Continue Shopping</a>");
-                out.println("<a href='createReview.jsp' style='margin-left: 20px;'>Leave a Review!</a>");
+                out.println("<a href='createReview.jsp?productId=" + productId + "' style='margin-left: 20px;'>Leave a Review!</a>");
                 out.println("</div>");
             } else {
                 out.println("<p style='color: red;'>Product not found.</p>");

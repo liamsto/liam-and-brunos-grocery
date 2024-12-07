@@ -181,7 +181,7 @@
     
             out.println("<tr>");
             out.println("<td>" + productId + "</td>");
-            out.println("<td><a href='" + productDetailLink + "'>" + productName + "</a></td>");
+            out.println("<td><a href='product.jsp?productId=" + productId + "'>" + productName + "</a></td>");
             out.println("<td>" + currFormat.format(productPrice) + "</td>");
             out.println("<td>" + categoryName + "</td>");
             out.println("<td><a href='" + addCartLink + "'>Add to Cart</a></td>");
