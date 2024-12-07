@@ -7,7 +7,7 @@
     // Validate inputs
     if (rating == null || reviewComment == null || productId == null ||
         rating.isEmpty() || reviewComment.isEmpty() || productId.isEmpty()) {
-        response.sendRedirect("product.jsp?message=Invalid%20input");
+        response.sendRedirect("listprod.jsp?message=Invalid%20input");
         return;
     }
 
@@ -17,7 +17,7 @@
 
         // Validate rating range
         if (ratingValue < 1 || ratingValue > 5) {
-            response.sendRedirect("product.jsp?message=Invalid%20rating%20value");
+            response.sendRedirect("listprod.jsp?message=Invalid%20rating%20value");
             return;
         }
 
@@ -43,7 +43,7 @@
         if (rs.next() && rs.getInt(1) == 0) {
             rs.close();
             checkStmt.close();
-            response.sendRedirect("product.jsp?message=Invalid%20product%20ID");
+            response.sendRedirect("listprod.jsp?message=Invalid%20product%20ID");
             return;
         }
         rs.close();
@@ -82,14 +82,14 @@
         conn.close();
 
         if (rowsInserted > 0) {
-            response.sendRedirect("product.jsp?message=Thank%20you%20for%20your%20review!");
+            response.sendRedirect("listprod.jsp?message=Thank%20you%20for%20your%20review!");
         } else {
-            response.sendRedirect("product.jsp?message=Failed%20to%20submit%20your%20review.");
+            response.sendRedirect("listprod.jsp?message=Failed%20to%20submit%20your%20review.");
         }
     } catch (NumberFormatException e) {
-        response.sendRedirect("product.jsp?message=Invalid%20rating%20or%20product%20ID");
+        response.sendRedirect("listprod.jsp?message=Invalid%20rating%20or%20product%20ID");
     } catch (Exception e) {
         e.printStackTrace();
-        response.sendRedirect("product.jsp?message=An%20error%20occurred:%20" + e.getMessage());
+        response.sendRedirect("listprod.jsp?message=An%20error%20occurred:%20" + e.getMessage());
     }
 %>
