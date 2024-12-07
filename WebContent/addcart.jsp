@@ -29,12 +29,21 @@ product.add(name);
 product.add(price);
 product.add(quantity);
 
-if (productList.containsKey(id)) {	
-	product = (ArrayList<Object>) productList.get(id);
-	int curAmount = ((Integer) product.get(3)).intValue();
-	product.set(3, new Integer(curAmount + 1));
+if (productList.containsKey(id)) {
+    product = (ArrayList<Object>) productList.get(id);
+
+    // Defensive checks for size and type
+    if (product.size() < 4 || !(product.get(3) instanceof Integer)) {
+        System.out.println("Incomplete or invalid product data for ID: " + id);
+        while (product.size() < 4) {
+            product.add(0); // Add default values for missing elements
+        }
+    }
+
+    int curAmount = ((Integer) product.get(3)).intValue();
+    product.set(3, curAmount + 1);
 } else {
-	productList.put(id, product);
+    productList.put(id, product);
 }
 
 session.setAttribute("productList", productList);

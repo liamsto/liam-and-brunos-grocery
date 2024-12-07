@@ -5,7 +5,7 @@
 - [ ] List of Sources
 - [X] Cart stored in database between sessions
 - [X] Create account data validation
-- [ ] Display product review on product page
+- [X] Display product review on product page
 ## Bruno
 - [ ] System Features
 - [ ] Walkthrough

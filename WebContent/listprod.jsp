@@ -62,14 +62,20 @@
         .header a:hover {
             text-decoration: underline;
         }
+        .message {
+            text-align: center;
+            font-weight: bold;
+            color: green;
+            margin: 20px 0;
+        }
     </style>
     <script>
-	function resetForm() {
-		//simple function that resets the form and reloads the page
-		const form = document.querySelector('form');
-		form.reset();
-		window.location.href = window.location.pathname;
-	}
+        function resetForm() {
+            //simple function that resets the form and reloads the page
+            const form = document.querySelector('form');
+            form.reset();
+            window.location.href = window.location.pathname;
+        }
     </script>
 </head>
 <body>
@@ -78,6 +84,14 @@
         <a href="listorder.jsp">List Orders</a>
         <a href="showcart.jsp">Shopping Cart</a>
     </div>
+
+    <%
+    // Check for message parameter and display if present
+    String message = request.getParameter("message");
+    if (message != null && !message.trim().isEmpty()) {
+        out.println("<div class='message'>" + message + "</div>");
+    }
+    %>
 
     <h1>Search for the products you want to buy:</h1>
 
@@ -134,9 +148,9 @@
     
         // Database connection
         String url = "jdbc:sqlserver://cosc304_sqlserver:1433;DatabaseName=orders;TrustServerCertificate=True";
-        String user = "sa";
-        String password = "304#sa#pw";
-        conn = DriverManager.getConnection(url, user, password);
+        String usr = "sa";
+        String pwd = "304#sa#pw";
+        conn = DriverManager.getConnection(url, usr, pwd);
     
         // Query to fetch products with category
         String query = "SELECT p.productId, p.productName, p.productPrice, c.categoryName FROM product p "
@@ -171,17 +185,17 @@
     
         while (rs.next()) {
             hasProducts = true;
-            int productId = rs.getInt("productId");
+            int productIdVal = rs.getInt("productId");
             String productName = rs.getString("productName");
             BigDecimal productPrice = rs.getBigDecimal("productPrice");
             String categoryName = rs.getString("categoryName");
     
-            String productDetailLink = "product.jsp?productId=" + productId;
-            String addCartLink = "addcart.jsp?id=" + productId + "&name=" + URLEncoder.encode(productName, "UTF-8") + "&price=" + productPrice;
+            String productDetailLink = "product.jsp?productId=" + productIdVal;
+            String addCartLink = "addcart.jsp?id=" + productIdVal + "&name=" + URLEncoder.encode(productName, "UTF-8") + "&price=" + productPrice;
     
             out.println("<tr>");
-            out.println("<td>" + productId + "</td>");
-            out.println("<td><a href='product.jsp?productId=" + productId + "'>" + productName + "</a></td>");
+            out.println("<td>" + productIdVal + "</td>");
+            out.println("<td><a href='" + productDetailLink + "'>" + productName + "</a></td>");
             out.println("<td>" + currFormat.format(productPrice) + "</td>");
             out.println("<td>" + categoryName + "</td>");
             out.println("<td><a href='" + addCartLink + "'>Add to Cart</a></td>");
