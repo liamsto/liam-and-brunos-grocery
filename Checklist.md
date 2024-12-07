@@ -4,7 +4,7 @@
 - [ ] Executive Summary
 - [ ] List of Sources
 - [X] Cart stored in database between sessions
-- [ ] Create account data validation
+- [X] Create account data validation
 - [ ] Display product review on product page
 ## Bruno
 - [ ] System Features
